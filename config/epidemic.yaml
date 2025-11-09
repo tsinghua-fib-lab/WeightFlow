@@ -1,0 +1,31 @@
+# -- General Settings
+device: "cuda:0"    # "cuda:x" or "cpu"
+interval: 10        # Interval for downsampling trajectories
+traj_length: 100    # Length of the trajectories in discrete systems
+
+# -- Training Hyperparameters
+pretrain:
+  batch_size: 64
+  lr: 0.01
+  fit_steps: 25
+train:
+  batch_size: 64
+  lr: 0.001
+  max_epoch: 100
+
+# -- Model Specific Parameters
+Theta_model: 'GRU'
+Theta:
+  hidden_dim: 8
+  num_layers: 1
+  mode: "discrete"
+  num_mixtures: -1
+Phi:
+  dynamics_type: "NeuralCDE"  # "NeuralODE" or "NeuralCDE"
+  z_dim: 1
+  z_method: "AE"  # AE, PCA, MDS, Isomap
+  energy_lambda: 0.000001
+  hidden_dim: 64
+  layer_num: 2
+  num_heads: 4
+  dropout_p: 0.1
