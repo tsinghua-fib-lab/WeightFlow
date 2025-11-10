@@ -35,9 +35,9 @@ WeightFlow relies on standard deep learning libraries.
 
 ### Demo
 
-We provide `epidemic.ipynb` and `cascade1.ipynb` as runnable demo for understanding how *WeightFlow* works. Checkpoint and dataset are placed in `logs/`.
+We provide `epidemic.ipynb` as runnable demo for understanding how *WeightFlow* works. Checkpoint and dataset are placed in `logs/`.
 
-### Train your own dataset
+### Use your own dataset
 
 The entire training process is handled by a single script, which automates a two-stage procedure: anchor pre-training and dynamics model training.
 
