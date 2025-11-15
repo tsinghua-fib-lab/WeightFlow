@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WeightFlow: Learning Stochastic Dynamics via Evolving Weight of Neural Network</title>
+  
+  <style>
+     /* Basic styles */
+     body {
+         font-family: Arial, sans-serif;
+         line-height: 1.6;
+         margin: 0 auto;
+         max-width: 900px;
+         padding: 20px;
+         background-color: rgb(240,240,240);
+         color: black;
+     }
+     h1 {
+         font-size: 2.5em;
+         color: rgb(32,32,128);
+         text-align: center;
+         margin-bottom: 20px;
+     }
+     h2 {
+         font-size: 1.8em;
+         color: rgb(64,64,96);
+         margin-top: 40px;
+         margin-bottom: 30px;
+         border-bottom: 2px solid rgb(64,128,216);
+         padding-bottom: 5px;
+     }
+     h3 {
+         font-size: 1.4em;
+         color: rgb(64,64,96);
+         margin-top: 30px;
+         margin-bottom: 20px;
+     }
+     h4 {
+         font-size: 1.1em;
+         color: rgb(64,64,96);
+         margin: 0 0 15px 0;
+         text-align: left;
+     }
+     p, li {
+         font-size: 1.0em;
+         margin: 10px 0;
+         text-align: left;
+     }
+     
+     /* Link styles */
+     a {
+         color: rgb(64, 128, 216);
+         text-decoration: none;
+     }
+     a:hover {
+         color: rgb(216, 128, 216);
+         text-decoration: none;
+     }
+     .button-link {
+         background-color: rgb(240,240,240);
+         text-decoration: none;
+         border: 1px solid black;
+         padding: 8px 16px;
+         border-radius: 20px;
+         display: inline-flex;
+         align-items: center;
+         justify-content: center;
+     }
+     .button-link:hover {
+         background-color: rgb(232,232,232);
+     }
+     
+     /* Image styles */
+     img {
+       max-width: 100%;
+       height: auto;
+       display: block;
+       margin: 0 auto;
+     }
+     .icon {
+         height: 20px;
+         width: 20px;
+         margin-right: 10px;
+         object-fit: contain;
+     }
+     .figure-container {
+         background: rgb(255,255,255);
+         border: 1px solid black;
+         margin: 10px 0;
+         padding: 15px;
+         border-radius: 12px;
+         box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+         text-align: center;
+     }
+     .figure-text {
+         font-size: 1.0em;
+         color: black;
+         margin-top: 12px;
+         text-align: left;
+     }
+
+     /* Grid styles for multi-column figures */
+     .grid-two-column {
+         width: 100%;
+         display: grid;
+         grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+         grid-row-gap: 12px;
+         grid-column-gap: 12px;
+         margin: auto;
+     }
+     .grid-three-column {
+         width: 100%;
+         display: grid;
+         grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+         grid-row-gap: 12px;
+         grid-column-gap: 12px;
+         margin: auto;
+     }
+     
+     /* Table styles */
+     table {
+         width: 100%;
+         border-collapse: collapse;
+         margin-top: 24px;
+     }
+     table caption {
+         font-size: 1.1em;
+         font-weight: bold;
+         margin-bottom: 10px;
+         text-align: left;
+     }
+     table th, table td {
+         border: 1px solid black;
+         text-align: center;
+         padding: 6px;
+         font-size: 0.9em;
+     }
+     table th {
+         background-color: #f2f2f2;
+     }
+     
+     /* Citation styles */
+     .citation-box {
+         background: #f6f8fa;
+         border: 1px solid #d0d7de;
+         border-radius: 6px;
+         padding: 20px;
+         font-family: 'SFMono-Regular', 'Monaco', 'Consolas', monospace;
+         font-size: 14px;
+         line-height: 1.5;
+         color: #24292f;
+         overflow-x: auto;
+         white-space: pre-wrap;
+         text-align: left;
+     }
+  </style>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [['$', '$'], ['\\(', '\\)']],
+            displayMath: [['$$', '$$'], ['\\[', '\\]']],
+            processEscapes: true
+        }
+    });
+  </script>
+    
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/academicons@1.9.2/css/academicons.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+</head>
+<body>
+
+  <h1>WeightFlow: Learning Stochastic Dynamics via Evolving Weight of Neural Network</h1>
+
+  <div style="text-align:center; margin-top:12px;">
+    <span style="display:inline-block; margin:0 0 8px 0; font-size:1.5em; font-weight:600;">💐 Paper accepted as <span style="color:rgb(216,32,32);">AAAI'26 Oral</span></span>
+    
+    <p style="margin:8px 0 6px 0; font-size:1rem; text-align: center;">
+        Ruikun Li<sup>1</sup>,
+        Jiazhen Liu<sup>2</sup>,
+        Huandong Wang<sup>2*</sup>,
+        Qingmin Liao<sup>1</sup>,
+        Yong Li<sup>2</sup>
+    </p>
+    
+    <p style="margin:6px 0 0 0; font-size:0.90rem; color: rgb(32,32,32); text-align: center;">
+        <sup>1</sup> Shenzhen International Graduate School, Tsinghua University,<br>
+        <sup>2</sup> Department of Electronic Engineering, BNRist, Tsinghua University
+    </p>
+    
+    <p style="margin:6px 0 0 0; font-size:0.90rem; color: rgb(32,32,32); text-align: center;">
+        <sup>*</sup> <em>Corresponding Author (wanghuandong@tsinghua.edu.cn)</em>
+    </p>
+    </div>
+
+  <div style="text-align: center; margin: 20px 0; display: flex; justify-content: center; gap: 16px; flex-wrap: wrap;">
+    <a href="https://arxiv.org/abs/2508.00451" class="button-link"><img src="https://arxiv.org/favicon.ico" alt="arXiv" class="icon">Paper</a>
+    
+    <a href="https://github.com/tsinghua-fib-lab/WeightFlow/blob/main/Appendix.pdf" class="button-link"><i class="fa fa-folder-open" style="margin-right: 10px;"></i>Appendix</a>
+
+    <a href="https://github.com/tsinghua-fib-lab/WeightFlow" class="button-link"><i class="fab fa-github" style="margin-right: 10px;"></i>Code</a>
+  </div>
+
+  <div class="figure-container">
+    <img src="asset/fig1_conceptual_overview.png" alt="WeightFlow Conceptual Overview">
+    <div class="figure-text">
+      <strong>Learning stochastic dynamics:</strong> WeightFlow projects the evolution of probability distributions (middle) from stochastic state trajectories (top) into a continuous path in the parameterized weight space of a neural network (bottom).
+    </div>
+  </div>
+
+
+  <h2>🔍 Highlights</h2>
+  <ul>
+    <li><strong>New Paradigm:</strong> Proposes a novel framework, WeightFlow, for modeling stochastic dynamics in the <strong>weight space</strong> of a neural network, avoiding the curse of dimensionality.</li>
+    <li><strong>Theoretical Connection:</strong> Theoretically derives the approximately equivalent formulation in neural network weight space for the dynamic optimal transport path found in probability space.</li>
+    <li><strong>Novel Architecture:</strong> Models network weights as a <strong>weight graph</strong> and introduces a <strong>graph controlled differential equation (CDE)</strong> to learn its continuous evolution.</li>
+    <li><strong>State-of-the-Art Performance:</strong> Achieves an average performance improvement of <strong>43.02%</strong> over existing state-of-the-art methods on diverse interdisciplinary datasets.</li>
+  </ul>
+
+
+  <h2>⚙️ WeightFlow Framework</h2>
+  <p>
+    WeightFlow models the neural network weights as a graph and employs a graph neural differential equation to learn the continuous dynamics of this weight graph. The framework consists of two main parts:
+  </p>
+
+  <p style="text-align: center; margin-top: 20px;">
+    <strong>1. Backbone ($\theta_t$):</strong> A backbone network with parameters $\theta_t$ models the static probability distribution at time $t$ using an autoregressive factorization:
+    <div class="math" style="text-align: center;">\[
+      p(x,t)=p_{\theta_{t}}(x)=\prod_{i=1}^{d}p_{\theta_{t}}(x_{i}|x_{1},...,x_{i-1})
+    \]</div>
+  </p>
+
+  <p style="text-align: center; margin-top: 20px;">
+    <strong>2. Hypernetwork ($g_{\phi}$):</strong> A graph hypernetwork $g_{\phi}$ then models the continuous evolution of these weights $\theta_t$ as a Controlled Differential Equation (CDE):
+    <div class="math" style="text-align: center;">\[
+      \theta_{\tau}=\theta_{0}+\int_{0}^{\tau}g_{\phi}(\theta_{t},t)\frac{dZ_{t}}{dt}dt
+    \]</div>
+  </p>
+  
+  <div class="figure-container" style="margin-top: 25px;">
+    <img src="asset/fig2_framework.png" alt="WeightFlow Framework Diagram">
+    <div class="figure-text">The framework of WeightFlow, illustrating the backbone, weight graph, path projection, and the Graph Neural Differential Equation.</div>
+  </div>
+
+
+  <h2>📊 Experimental Results</h2>
+  
+  <p>We empirically evaluate WeightFlow on a diverse set of simulated and real-world stochastic dynamics, demonstrating its superior performance and robustness.</p>
+
+  <h3>Simulated Datasets: Discrete State Systems</h3>
+  <p>We first benchmarked WeightFlow against several state-of-the-art baselines on five discrete stochastic systems. As shown in Table 1, WeightFlow significantly outperforms all baselines, improving the Wasserstein (W) and Jensen-Shannon (JSD) distances by 32.04% and 53.99% on average, respectively.</p>
+  
+  <table width="100%">
+    <caption>Table 1: Statistic results on various stochastic dynamical systems. (All values $\times 10^{-1}$)</caption>
+    <thead>
+      <tr>
+        <th rowspan="2" style="vertical-align: middle;">Model</th>
+        <th colspan="2">Epidemic</th>
+        <th colspan="2">Toggle Switch</th>
+        <th colspan="2">Signalling Cascade1</th>
+        <th colspan="2">Signalling Cascade2</th>
+        <th colspan="2">Ecological Evolution</th>
+      </tr>
+      <tr>
+        <th>$\mathcal{W} \downarrow$</th>
+        <th>$JSD \downarrow$</th>
+        <th>$\mathcal{W} \downarrow$</th>
+        <th>$JSD \downarrow$</th>
+        <th>$\mathcal{W} \downarrow$</th>
+        <th>$JSD \downarrow$</th>
+        <th>$\mathcal{W} \downarrow$</th>
+        <th>$JSD \downarrow$</th>
+        <th>$\mathcal{W} \downarrow$</th>
+        <th>$JSD \downarrow$</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Latent SDE</td>
+        <td>3.14<sub>&pm;0.25</sub></td>
+        <td>4.22<sub>&pm;0.26</sub></td>
+        <td>2.34<sub>&pm;0.15</sub></td>
+        <td>1.27<sub>&pm;0.12</sub></td>
+        <td>3.04<sub>&pm;0.17</sub></td>
+        <td>0.85<sub>&pm;0.14</sub></td>
+        <td>3.59<sub>&pm;0.13</sub></td>
+        <td>1.02<sub>&pm;0.06</sub></td>
+        <td>8.04<sub>&pm;0.33</sub></td>
+        <td>3.52<sub>&pm;0.23</sub></td>
+      </tr>
+      <tr>
+        <td>Neural MJP</td>
+        <td>1.88<sub>&pm;0.14</sub></td>
+        <td>1.61<sub>&pm;0.14</sub></td>
+        <td>2.13<sub>&pm;0.26</sub></td>
+        <td>0.94<sub>&pm;0.14</sub></td>
+        <td>1.69<sub>&pm;0.15</sub></td>
+        <td>0.30<sub>&pm;0.04</sub></td>
+        <td>1.68<sub>&pm;0.11</sub></td>
+        <td>0.36<sub>&pm;0.01</sub></td>
+        <td>1.68<sub>&pm;0.18</sub></td>
+        <td>0.51<sub>&pm;0.03</sub></td>
+      </tr>
+      <tr>
+        <td>T-IB</td>
+        <td>2.62<sub>&pm;0.17</sub></td>
+        <td>3.52<sub>&pm;0.29</sub></td>
+        <td>1.59<sub>&pm;0.20</sub></td>
+        <td>0.88<sub>&pm;0.11</sub></td>
+        <td>1.66<sub>&pm;0.16</sub></td>
+        <td>0.32<sub>&pm;0.04</sub></td>
+        <td>2.16<sub>&pm;0.17</sub></td>
+        <td>0.40<sub>&pm;0.03</sub></td>
+        <td>2.17<sub>&pm;0.24</sub></td>
+        <td>0.56<sub>&pm;0.06</sub></td>
+      </tr>
+      <tr>
+        <td>NLSB</td>
+        <td>3.27<sub>&pm;0.28</sub></td>
+        <td>1.65<sub>&pm;0.14</sub></td>
+        <td>2.97<sub>&pm;0.30</sub></td>
+        <td>1.32<sub>&pm;0.20</sub></td>
+        <td>1.50<sub>&pm;0.10</sub></td>
+        <td>0.39<sub>&pm;0.05</sub></td>
+        <td>1.83<sub>&pm;0.15</sub></td>
+        <td>0.48<sub>&pm;0.05</sub></td>
+        <td>3.09<sub>&pm;0.26</sub></td>
+        <td>2.80<sub>&pm;0.32</sub></td>
+      </tr>
+      <tr>
+        <td>DeepRUOT</td>
+        <td>1.78<sub>&pm;0.13</sub></td>
+        <td>1.08<sub>&pm;0.09</sub></td>
+        <td>1.37<sub>&pm;0.17</sub></td>
+        <td>0.77<sub>&pm;0.05</sub></td>
+        <td>0.52<sub>&pm;0.02</sub></td>
+        <td>0.07<sub>&pm;0.00</sub></td>
+        <td>0.51<sub>&pm;0.01</sub></td>
+        <td>0.08<sub>&pm;0.00</sub></td>
+        <td>3.27<sub>&pm;0.31</sub></td>
+        <td>2.47<sub>&pm;0.36</sub></td>
+      </tr>
+      <tr>
+        <td>WeightFlow (Ours)</td>
+        <td><strong>1.10<sub>&pm;0.14</sub></strong></td>
+        <td><strong>0.34<sub>&pm;0.01</sub></strong></td>
+        <td><strong>0.82<sub>&pm;0.07</sub></strong></td>
+        <td><strong>0.33<sub>&pm;0.02</sub></strong></td>
+        <td><strong>0.48<sub>&pm;0.03</sub></strong></td>
+        <td><strong>0.04<sub>&pm;0.00</sub></strong></td>
+        <td><strong>0.49<sub>&pm;0.07</sub></strong></td>
+        <td><strong>0.06<sub>&pm;0.01</sub></strong></td>
+        <td><strong>0.51<sub>&pm;0.07</sub></strong></td>
+        <td><strong>0.12<sub>&pm;0.02</sub></strong></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p style="margin-top: 25px;">
+    In the ecological evolution system (visualized below), a 2D genetic phenotype (Locus 1, Locus 2) evolves towards a global peak on a fitness landscape. WeightFlow accurately predicts the distribution's evolution, capturing both macroscopic landscape shifts and fine-grained local dynamics.
+  </p>
+  
+  <div class="figure-container">
+    <img src="asset/fig3_eco_evolution.png" alt="Ecological Evolution Results">
+    <div class="figure-text">Joint and marginal distributions predicted by WeightFlow over time on the Ecological Evolution system.</div>
+  </div>
+
+  <h3>Real-world Datasets: Real-World Single-Cell Data</h3>
+  <p>We also evaluated WeightFlow on high-dimensional, continuous-space, single-cell differentiation datasets. The visualization of the pancreatic β-cell differentiation path shows our model's predictions. WeightFlow is significantly more accurate for higher-order moments like skewness and kurtosis, reproducing fine-grained distribution structures.</p>
+
+  <div class="figure-container">
+    <img src="asset/fig4_beta_cell.png" alt="Beta-cell Differentiation Results">
+    <div class="figure-text">Weight prediction for β-cell differentiation, showing continuous evolution and comparison to DeepRUOT.</div>
+  </div>
+
+  <table width="100%">
+    <caption>Table 2: Statistical results on real-world cell datasets.</caption>
+    <thead>
+      <tr>
+        <th rowspan="2" style="vertical-align: middle;">Model</th>
+        <th colspan="2">$\beta$-cell</th>
+        <th colspan="2">Embryoid</th>
+      </tr>
+      <tr>
+        <th>$\mathcal{W} \downarrow$</th>
+        <th>$MMD \downarrow$</th>
+        <th>$\mathcal{W} \downarrow$</th>
+        <th>$MMD \downarrow$</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>NLSB</td>
+        <td>11.18<sub>&pm;0.22</sub></td>
+        <td>0.07<sub>&pm;0.01</sub></td>
+        <td>14.39<sub>&pm;0.40</sub></td>
+        <td>0.10<sub>&pm;0.03</sub></td>
+      </tr>
+      <tr>
+        <td>RUOT</td>
+        <td>10.99<sub>&pm;0.20</sub></td>
+        <td>0.06<sub>&pm;0.01</sub></td>
+        <td>14.71<sub>&pm;0.49</sub></td>
+        <td>0.15<sub>&pm;0.03</sub></td>
+      </tr>
+      <tr>
+        <td>WeightFlow (Ours)</td>
+        <td><strong>9.73<sub>&pm;0.27</sub></strong></td>
+        <td><strong>0.02<sub>&pm;0.01</sub></strong></td>
+        <td><strong>14.18<sub>&pm;0.43</sub></strong></td>
+        <td><strong>0.03<sub>&pm;0.01</sub></strong></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>Ablation Studies</h3>
+  <p>We performed ablation studies to validate key design choices of WeightFlow.</p>
+
+  <div class="figure-container">
+    <h4 style="margin: 0 0 15px 0;">Component Ablations</h4>
+    <div class="grid-three-column">
+      <div>
+        <img src="asset/fig7a_autoregressive_order.png" alt="Autoregressive Order Ablation">
+        <div class="figure-text">
+          <strong>Autoregressive Order:</strong> A random order performs similarly to the sequential one, confirming robustness.
+        </div>
+      </div>
+      <div>
+        <img src="asset/fig7b_backbone_architecture.png" alt="Backbone Architecture Ablation">
+        <div class="figure-text">
+          <strong>Backbone Architecture:</strong> Performance is similar for both GRU and Transformer backbones.
+        </div>
+      </div>
+      <div>
+        <img src="asset/fig7c_sequential_aligning.png" alt="Sequential Aligning Ablation">
+        <div class="figure-text">
+          <strong>Sequential Aligning:</strong> Disabling the warm-start strategy (w/o Aligned) leads to significant performance degradation.
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <h3>Sensitivity Analysis</h3>
+  <p>We analyzed WeightFlow's sensitivity to various hyperparameters, demonstrating its robustness.</p>
+  
+  <div class="figure-container">
+    <h4 style="margin: 0 0 15px 0;">Impact of Backbone, Data, and Path Dimension</h4>
+    <div class="grid-three-column">
+      <div>
+        <img src="asset/fig6a_backbone_size.png" alt="Backbone Size Sensitivity">
+        <div class="figure-text"><strong>Backbone Size:</strong> A small hidden dimension (e.g., 8) is sufficient.</div>
+      </div>
+      <div>
+        <img src="asset/fig6b_data_ratio.png" alt="Data Ratio Sensitivity">
+        <div class="figure-text"><strong>Data Size:</strong> Performance is stable even with only 20% of the data.</div>
+      </div>
+      <div>
+        <img src="asset/fig6c_path_dimension.png" alt="Path Dimension Sensitivity">
+        <div class="figure-text"><strong>Path Dimension:</strong> A 1-dim path is sufficient to capture dynamics.</div>
+      </div>
+    </div>
+  </div>
+
+  <h3>Time and Space Cost Analysis</h3>
+  <p>
+    WeightFlow is designed to be scalable and efficient. The backbone's size is independent of the system's dimension $d$, with $O(L)$ space complexity (where $L$ is states per dimension) and $O(d)$ inference time. The hypernetwork's complexity $O(N_{nodes}^2)$ is also independent of $d$. This design effectively avoids the curse of dimensionality.
+  </p>
+  <div class="figure-container">
+    <div class="grid-two-column">
+      <div>
+        <img src="asset/fig8a_inference_time.png" alt="Inference Time vs Error" style="height: 280px; width: auto;">
+        <div class="figure-text">
+          <strong>Inference Time vs. Error:</strong> WeightFlow achieves the Pareto frontier, offering the best trade-off compared to baselines.
+        </div>
+      </div>
+      <div>
+        <img src="asset/fig8b_model_size.png" alt="Model Size Scaling" style="height: 280px; width: auto;">
+        <div class="figure-text">
+          <strong>Model Size:</strong> The parameter size of both the backbone and hypernetwork scales only linearly with the number of candidate states, $L$.
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <h2>📚 Citation</h2>
+  <p>If you find our work useful for your research, please consider citing:</p>
+  
+  <div class="citation-box">
+@article{li2025weightflow,
+  title={WeightFlow: Learning Stochastic Dynamics via Evolving Weight of Neural Network},
+  author={Li, Ruikun and Liu, Jiazhen and Wang, Huandong and Liao, Qingmin and Li, Yong},
+  journal={arXiv preprint arXiv:2508.00451},
+  year={2025}
+}
+  </div>
+
+</body>
+</html>

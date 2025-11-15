@@ -2,7 +2,7 @@
 
 Official implement of **AAAI'26** **(Oral)** "*WeightFlow: Learning Stochastic Dynamics via Evolving Weight of Neural Network*", a novel paradigm for modeling the continuous evolution of probability distributions by learning the dynamics directly in the weight space of a neural network.
 
-![method](./asset/method.png)
+![method](./asset/fig2_framework.png)
 
 
 
